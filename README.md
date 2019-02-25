@@ -102,3 +102,5 @@ Mostrar qual banco de dados que estou connectado no momento:
 
     1> select db_name()
     2> go
+    
+Dica de ide para administrar o banco: https://dbeaver.io/download/
