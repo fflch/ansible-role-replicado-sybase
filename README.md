@@ -94,7 +94,7 @@ Mostrar tabelas do banco de dados fflch:
     1> exec sp_tables '%', '%', 'fflch',"'TABLE'"
     2> go
 
-Você pode carregar um arquivo com seu sql:
+Carregar um arquivo sql:
 
     isql -Usa -PSuaSenha -SSEU_SERVER -iSeuArquivoComSql.sql
 
@@ -102,5 +102,35 @@ Mostrar qual banco de dados que estou connectado no momento:
 
     1> select db_name()
     2> go
-    
-Dica de ide para administrar o banco: https://dbeaver.io/download/
+       
+Dicas de IDEs para administrar graficamente o banco: 
+
+- https://dbeaver.io/download/
+
+
+### Criando um usuário com permissão de somente leitura
+
+Criar login e senha:
+
+    1> use master
+    2> go
+    1> sp_addlogin "read_only_user", "SUA_SENHA"
+    2> go
+
+Adicionar usuário acima ao banco fflch:
+
+    1> use fflch
+    2> go
+    1> sp_adduser 'read_only_user', 'read_only_user'
+    2> go
+
+Gerar SQLs que darão permissão de select em todas tabelas do banco fflch:
+
+    1> use fflch
+    2> go
+    1> select 'grant select on ' + name + ' to read_only_user' from sysobjects where type = 'U' or type = 'P'
+    2> go
+
+Testar conexã do novo usuário:
+
+    isql -Uread_only_user -PSUA_SENHA -SSYBASE -w1000
