@@ -89,10 +89,17 @@ Usuário dbmaint com privilégio de criar tabelas no Banco de Dados (alias de db
 
 Mostrar tabelas do banco de dados fflch:
 
-    1> use fflch_dbc
+    1> use fflch
     2> go
     1> exec sp_tables '%', '%', 'fflch',"'TABLE'"
     2> go
+
+Outra forma de mostrar tabelas do banco de dados fflch:
+
+    1> use fflch
+    2> go 
+    1> select name from sysobjects where type = 'U' or type = 'P'
+    2> go 
 
 Carregar um arquivo sql:
 
