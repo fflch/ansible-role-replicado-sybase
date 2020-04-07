@@ -1,0 +1,4 @@
+- name: load SYBASE.sh in /etc/bash.bashrc
+  lineinfile:
+    path: /etc/bash.bashrc
+    line: "source {{sap_ase_target}}/SYBASE.sh"

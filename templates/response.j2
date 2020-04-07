@@ -1,342 +1,130 @@
-#Validate Response File
-#----------------------
-#
+# Global Options
+#---------------------------------------------
 RUN_SILENT=true
-
-#Choose Install Folder
-#---------------------
-# USER_INSTALL_DIR=<Destination directory in absolute path>
-#
-USER_INSTALL_DIR={{sap_ase_bin}}
-
-#Install older version
-#---------------------
-# INSTALL_OLDER_VERSION=<true|false>.
-#	This determines whether installer can overwrite newer version.
-#
+USER_INSTALL_DIR={{sap_ase_target}}
 INSTALL_OLDER_VERSION=false
-
-#Choose Update Installation
-#--------------------------
-# DO_UPDATE_INSTALL=<true|false>.
-#	This determines if the installer selects and applies
-#	updates to the installed product/features.
-#
 DO_UPDATE_INSTALL=false
 
-#Choose Install Set
-#------------------
-# CHOSEN_INSTALL_SET=<Typical|Full|Custom>
-# CHOSEN_FEATURE_LIST=<Features you want to install>
-# 	Valid values are:
-#	-----------------
-#	fase_srv		--> SAP ASE Server
-#	fase_add_lm		--> Additional SAP ASE Language Modules
-#	fopen_client		--> Open Client
-#	fdblib			--> DB-Library
-#	fesql_c_lang		--> Embedded SQL/C
-#	fesql_cobol_lang	--> Embedded SQL/Cobol
-#	fxa			--> XA Interface Library for SAP ASE Distributed Transaction Manager
-#		Available on:
-#			Itanium/HP-UX 64-bit
-#			IBM/AIX 64-bit
-#			x86-64/Linux 64-bit
-#			SPARC/Solaris 64-bit
-#			x86-64/Solaris 64-bit
-#			x86-64/Windows 64-bit
-#	fconn_add_lm		--> Additional Connectivity Language Modules
-#	fjconnect160		--> jConnect 16.0 for JDBC
-#	fodbcl			--> SAP ASE ODBC Driver
-#	fodata_ase		--> OData Server for SAP ASE
-#		Available on:
-#			x86-64/Linux 64-bit
-#			x86-64/Windows 64-bit
-#	fdbisql			--> Interactive SQL
-#	fqptune			--> QPTune
-#	fsysam_util		--> SySAM License Utilities
-#	fsysam_server		--> SySAM License Server
-#	fscc_server		--> Cockpit
-#	fasecmap		--> SAP ASE Cockpit
-#	fase_cagent		--> Remote Command and Control Agent for SAP ASE
-#	fconn_python		--> SAP ASE extension module for Python
-#	fconn_perl		--> SAP ASE database driver for PERL
-#		Available on:
-#			x86-64/Linux 64-bit
-#			x86-64/Windows 64-bit
-#	fconn_php		--> SAP ASE extension module for PHP
-#
-# Notes:
-# - If DO_UPDATE_INSTALL=true, CHOSEN_INSTALL_SET and CHOSEN_FEATURE_LIST
-#   are ignored.
-# - If CHOSEN_INSTALL_SET is set to "Typical", or "Full", do not set
-#   CHOSEN_FEATURE_LIST.
-#
+# Instalation Type
+#---------------------------------------------
 CHOSEN_FEATURE_LIST=fase_srv,fopen_client,fdblib,fjconnect160,fdbisql,fqptune,fsysam_util,fase_cagent,fodbcl,fconn_python,fconn_perl,fconn_php,fscc_server,fasecmap
 CHOSEN_INSTALL_FEATURE_LIST=fase_srv,fopen_client,fdblib,fjconnect160,fdbisql,fqptune,fsysam_util,fase_cagent,fodbcl,fconn_python,fconn_perl,fconn_php,fscc_server,fasecmap
 CHOSEN_INSTALL_SET=Typical
-
-#Choose Product License Type
-#---------------------------
-# SYBASE_PRODUCT_LICENSE_TYPE=<license|evaluate|express>
-#	This is the End User License Agreement (EULA) you agreed to when run
-#	installer with "-DAGREE_TO_SAP_LICENSE=true" argument.
-#
-# Note:
-# - 'evaluate' and 'express' only available on some platforms.
-#
 SYBASE_PRODUCT_LICENSE_TYPE=express
 
-#Choose SAP Software Asset Management License
-#-----------------------------------------------
-# SYSAM_LICENSE_SOURCE=<license_file|existing_license_server|proceed_without_license>
-# SYSAM_LICENSE_FILE_PATHNAME=<license key file path>
-#	Required when SYSAM_LICENSE_SOURCE is set to 'license_file'.
-# SYSAM_EXISTING_LICENSE_SERVER_HOSTNAME=<license key server name>
-#	Required when SYSAM_LICENSE_SOURCE is set to 'existing_license_server'.
-# SYSAM_EXISTING_LICENSE_SERVER_PORTNUMBER=<license key server port number>
-#	Set this to null for default port number.
-#
-SYSAM_LICENSE_SOURCE=proceed_without_license
-SYSAM_LICENSE_FILE_PATHNAME=
-SYSAM_EXISTING_LICENSE_SERVER_HOSTNAME=
-SYSAM_EXISTING_LICENSE_SERVER_PORTNUMBER=
-
-#Choose SYSAM Product Edtion and License Type
-#--------------------------------------------
-# SYSAM_PRODUCT_EDITION=<Enterprise Edition|Small Business Edition|Unknown>
-# SYSAM_LICENSE_TYPE=<License type>
-#	Valid SYSAM_LICENSE_TYPE value for SYSAM_PRODUCT_EDITION='Enterprise Edition':
-#		CP :  CPU License
-#		SF :  Standby CPU License
-#		SR :  Server License
-#		SV :  Standby Server License
-#		DT :  Development and Test License
-#		EV :  Evaluation License
-#		OT :  Other License
-#		SS :  Standalone Seat License
-#		DV :  Developer License
-#		NA :  Not Applicable or Other License
-#		AC :  OEM Application Deployment CPU License
-#		BC :  OEM Application Deployment Standby CPU License
-#		AR :  OEM Application Deployment Server License
-#		BR :  OEM Application Deployment Standby Server License
-#		AO :  OEM Application Deployment Other License
-#		LP :  Application Specific CPU License
-#		LF :  Application Specific Standby CPU License
-#		LR :  Application Specific Server License
-#		LV :  Application Specific Standby Server License
-#		Unknown
-#	Valid SYSAM_LICENSE_TYPE value for SYSAM_PRODUCT_EDITION='Small Business Edition':
-#		CP :  CPU License
-#		SF :  Standby CPU License
-#		SR :  Server License
-#		SV :  Standby Server License
-#		DT :  Development and Test License
-#		EV :  Evaluation License
-#		OT :  Other License
-#		SS :  Standalone Seat License
-#		DV :  Developer License
-#		NA :  Not Applicable or Other License
-#		AC :  OEM Application Deployment CPU License
-#		BC :  OEM Application Deployment Standby CPU License
-#		AR :  OEM Application Deployment Server License
-#		BR :  OEM Application Deployment Standby Server License
-#		AO :  OEM Application Deployment Other License
-#		LP :  Application Specific CPU License
-#		LF :  Application Specific Standby CPU License
-#		LR :  Application Specific Server License
-#		LV :  Application Specific Standby Server License
-#		DH :  Development and Testing Chip License
-#		CH :  Chip License
-#		SH :  Standby Chip License
-#		AH :  Application Deployment Chip License
-#		BH :  Application Deployment Standby Chip License
-#		LH :  Application Specific Chip License
-#		LI :  Application Specific Standby Chip License
-#		Unknown
-#	Valid SYSAM_LICENSE_TYPE value for SYSAM_PRODUCT_EDITION=Unknown
-#		None
-#
-SYSAM_PRODUCT_EDITION=Enterprise Edition
-SYSAM_LICENSE_TYPE=CP :  CPU License
-
-#Software Asset Management Notification Setting
-#----------------------------------------------
-# SYSAM_NOTIFICATION_ENABLE=<true|false>
-#	Enable SySAM email notification
-# SYSAM_NOTIFICATION_SMTP_HOSTNAME=<SMTP server host name>
-#	Required if SYSAM_NOTIFICATION_ENABLE=true
-# SYSAM_NOTIFICATION_SMTP_PORTNUMBER=<SMTP server port number>
-#	Required if SYSAM_NOTIFICATION_ENABLE=true
-# SYSAM_NOTIFICATION_SENDER_EMAIL=<Sender email>
-#	Required if SYSAM_NOTIFICATION_ENABLE=true
-# SYSAM_NOTIFICATION_RECIPIENT_EMAIL=<Recipient emails>
-#	Required if SYSAM_NOTIFICATION_ENABLE=true
-# SYSAM_NOTIFICATION_EMAIL_SEVERITY=<INFORMATIONAL|WARNING|ERROR>
-#	Required if SYSAM_NOTIFICATION_ENABLE=true
-
-#Choose Update SAP ASE
-#-----------------------------
-# DO_UPDATE_ASE_SERVER=<true|false>
-#	This property determines whether to update the existing SAP ASE.
-#	It is only valid if DO_UPDATE_INSTALL=true.
-# UPDATE_ASE_SERVER_NAME_[n]=<SAP ASE name to update>
-# UPDATE_ASE_PASSWORD_[n]=<SAP ASE SA password>
-#
-# Notes:
-# - You also can set UPDATE_ASE_SERVER_NAME_[n] and UPDATE_ASE_PASSWORD_[n]
-#   property values through the environment variables UPDATE_ASE_SERVER_NAME_[n]
-#   and UPDATE_ASE_PASSWORD_[n], respectively.
-# - If the ASE password is null, set UPDATE_ASE_SERVER_NAME_[n] value to "NA".
-#
-DO_UPDATE_ASE_SERVER=false
-UPDATE_ASE_SERVER_NAME_1={{sap_ase_server_name}}
-UPDATE_ASE_PASSWORD_1={{sap_ase_password}}
+# What this lines does?
+-fileOverwrite_{{sap_ase_target}}/sybuninstall/ASESuite/uninstall.lax=Yes
 
 #Configure New Servers
 #---------------------
-# SY_CONFIG_ASE_SERVER=<true|false>
-#	This property determines whether to configure SAP ASE.
-# SY_CONFIG_BS_SERVER=<true|false>
-#	This property determines whether to configure Backup Server.
-# SY_CONFIG_XP_SERVER=<true|false>
-#	This property determines whether to configure XP Server.
-# SY_CONFIG_JS_SERVER=<true|false>
-#	This property determines whether to configure Job Scheduler Agent.
-# SY_CONFIG_SM_SERVER=<true|false>
-#	This property determines whether to enable Self Management.
-# SY_CONFIG_SCC_SERVER=<true|false>
-#	This property determines whether to configure Cockpit.
-#
-# Notes:
-# - These properties are ignored if you set DO_UPDATE_INSTALL=true.
-#   See above for updating the existing ASE servers.
-# - If SY_CONFIG_BS_SERVER, SY_CONFIG_XP_SERVER, and/or SY_CONFIG_JS_SERVER,
-#   are set to "true", SY_CONFIG_ASE_SERVER must also set to "true".
-# - If SY_CONFIG_SM_SERVER=true, SY_CONFIG_JS_SERVER must also set to "true".
-#
 SY_CONFIG_ASE_SERVER=true
+SY_CONFIG_BS_SERVER=true
+SY_CONFIG_JS_SERVER=true
+SY_CONFIG_SCC_SERVER=true
+
 SY_CONFIG_HADR_SERVER=false
-SY_CONFIG_BS_SERVER=false
 SY_CONFIG_XP_SERVER=false
-SY_CONFIG_JS_SERVER=false
 SY_CONFIG_BALDR_OPTION=false
 SY_CONFIG_SM_SERVER=false
 SY_CONFIG_WS_SERVER=false
-SY_CONFIG_SCC_SERVER=false
 SY_CONFIG_TXT_SERVER=false
+
 #Configure Servers with Different User Account
 #---------------------------------------------
-# If SY_CFG_USER_ACCOUNT_CHANGE=yes, below properties are required:
-#
-# SY_CFG_USER_ACCOUNT_NAME=<user name>
-# SY_CFG_USER_ACCOUNT_PASSWORD=<user password>
-#
 SY_CFG_USER_ACCOUNT_CHANGE=no
 SY_CFG_USER_ACCOUNT_NAME=
 SY_CFG_USER_ACCOUNT_PASSWORD=
+SY_CFG_USER_ACCOUNT_CONFIRM_PASSWORD=
 
 #User Configuration Data Directory
 #---------------------------------
-SY_CFG_USER_DATA_DIRECTORY={{sap_ase_bin}}
+SY_CFG_USER_DATA_DIRECTORY={{sap_ase_target}}
 
 #Configure New SAP ASE
-#-----------------------------
-# If SY_CONFIG_ASE_SERVER=true, below properties are required:
-#
-# SY_CFG_ASE_SERVER_NAME=<SAP ASE name>
-# SY_CFG_ASE_PORT_NUMBER=<SAP ASE port number>
-# SY_CFG_ASE_APPL_TYPE=<MIXED|OLTP|DSS>
-#	This property describes the intended use of the ASE server:
-#		OLTP	--> Online Transaction Proccessing
-#		DSS	--> Decision Support Systems
-#		Mixed	--> OLTP/DSS
-# SY_CFG_ASE_PAGESIZE=<2k|4k|8k|16k>
-#	SAP ASE page size
-# ASE_ADDL_CMD_ARG=<Additional command line arguments to ASE>
-# SY_CFG_ASE_PASSWORD=<SA's password>
-# SY_CFG_ASE_MASTER_DEV_NAME=<Master device name>
-# SY_CFG_ASE_MASTER_DEV_SIZE=<Master device size in MB>
-# SY_CFG_ASE_MASTER_DB_SIZE=<Master database size in MB>
-# SY_CFG_ASE_SYBPROC_DEV_NAME=<System procedure device name>
-# SY_CFG_ASE_SYBPROC_DEV_SIZE=<System procedure device size in MB>
-# SY_CFG_ASE_SYBPROC_DB_SIZE=<System procedure database size in MB>
-# SY_CFG_ASE_SYBTEMP_DEV_NAME=<System device name for two phase commit>
-# SY_CFG_ASE_SYBTEMP_DEV_SIZE=<System device size in MB>
-# SY_CFG_ASE_SYBTEMP_DB_SIZE=<System database size in MB>
-# SY_CFG_ASE_ERROR_LOG=<Error log>
-# CFG_REMOTE_AND_CONTROL_AGENT=<true|false>
-#	Configures Remote Command and Control Agent for SAP ASE.
-#	This is only valid if Remote Command and Control Agent
-#	for SAP ASE is installed.
-# ENABLE_COCKPIT_MONITORING=<true|false>
-#	Enable SAP ASE for SAP ASE Cockpit monitoring.
-#	This is only valid if SAP ASE Cockpit is installed.
-# COCKPIT_TECH_USER=<SAP ASE Cockpit technical user>
-#	Required if ENABLE_COCKPIT_MONITORING=true.
-# COCKPIT_TECH_USER_PASSWORD=<SAP ASE Cockpit technical user password>
-#	Required if ENABLE_COCKPIT_MONITORING=true.
-# SY_CFG_ASE_PCI_ENABLE=<true|false>
-#	This property determines if Java in database feature is enabled.
-# SY_CFG_ASE_PCI_DEV_NAME=<Device name for "sybpcidb" database>
-#	Required if SY_CFG_ASE_PCI_ENABLE=true
-# SY_CFG_ASE_PCI_DEV_SIZE=<PCI device size in MB>
-#	Required if SY_CFG_ASE_PCI_ENABLE=true
-# SY_CFG_ASE_PCI_DB_SIZE=<PCI database size in MB>
-#	Required if SY_CFG_ASE_PCI_ENABLE=true
-# SY_CFG_ASE_TEMP_DEV_NAME=<Device for temporary database>
-# SY_CFG_ASE_TEMP_DEV_SIZE=<Temporary device size in MB>
-# SY_CFG_ASE_TEMP_DB_SIZE=<Temporary database size in MB>
-# SY_CFG_ASE_OPT_ENABLE=<true|false>
-#	This property determines if it should optimized the SAP ASE.
-# SY_CFG_ASE_CPU_NUMBER=<Available physical memory for ASE in MB>
-#	Required if SY_CFG_ASE_OPT_ENABLE=true
-# SY_CFG_ASE_MEMORY=<Available number of CPU for ASE>
-#	Required if SY_CFG_ASE_OPT_ENABLE=true
-# SY_CFG_ASE_LANG=<Default language in ASE>
-#	Set this to null to use default language.
-# SY_CFG_ASE_CHARSET=<Default character set in ASE>
-#	Set this to null to use default character set.
-# SY_CFG_ASE_SORTORDER=<Default sort order in ASE>
-#	Set this to null to use default sort order.
-# SY_CFG_ASE_SAMPLE_DB=<true|false>
-#	Determines whether to create pubs2 and pubs3 sample databases.
-#
+#---------------------------------
 SY_CFG_ASE_SERVER_NAME={{sap_ase_server_name}}
 SY_CFG_ASE_HOST_NAME={{sap_ase_host}}
 SY_CFG_ASE_PORT_NUMBER=5000
 SY_CFG_ASE_APPL_TYPE=MIXED
 SY_CFG_ASE_PAGESIZE=2k
-ASE_ADDL_CMD_ARG=
 SY_CFG_ASE_PASSWORD={{sap_ase_password}}
-SY_CFG_ASE_MASTER_DEV_NAME={{sap_ase_bin}}/data/master.dat
+SY_CFG_ASE_MASTER_DEV_NAME={{sap_ase_target}}/data/master.dat
 SY_CFG_ASE_MASTER_DEV_SIZE=2048
 SY_CFG_ASE_MASTER_DB_SIZE=1024
-SY_CFG_ASE_SYBPROC_DEV_NAME={{sap_ase_bin}}/data/sysprocs.dat
+SY_CFG_ASE_SYBPROC_DEV_NAME={{sap_ase_target}}/data/sysprocs.dat
 SY_CFG_ASE_SYBPROC_DEV_SIZE=4096
 SY_CFG_ASE_SYBPROC_DB_SIZE=4096
-SY_CFG_ASE_SYBTEMP_DEV_NAME={{sap_ase_bin}}/data/sybsysdb.dat
+SY_CFG_ASE_SYBTEMP_DEV_NAME={{sap_ase_target}}/data/sybsysdb.dat
 SY_CFG_ASE_SYBTEMP_DEV_SIZE=2048
 SY_CFG_ASE_SYBTEMP_DB_SIZE=2048
 SY_CFG_ASE_ERROR_LOG={{sap_ase_log}}/{{sap_ase_server_name}}.log
 CFG_REMOTE_AND_CONTROL_AGENT=false
-ENABLE_COCKPIT_MONITORING=false
+ENABLE_COCKPIT_MONITORING=true
 COCKPIT_TECH_USER=tech_user
-COCKPIT_TECH_USER_PASSWORD=Sybase123
+COCKPIT_TECH_USER_PASSWORD={{sap_ase_tech_user}}
 SY_CFG_ASE_PCI_ENABLE=false
 SY_CFG_ASE_PCI_DEV_NAME=
 SY_CFG_ASE_PCI_DEV_SIZE=
 SY_CFG_ASE_PCI_DB_SIZE=
-SY_CFG_ASE_TEMP_DEV_NAME={{sap_ase_bin}}/data/tempdbdev.dat
+SY_CFG_ASE_TEMP_DEV_NAME={{sap_ase_target}}/data/tempdbdev.dat
 SY_CFG_ASE_TEMP_DEV_SIZE=2048
 SY_CFG_ASE_TEMP_DB_SIZE=512
 SY_CFG_ASE_OPT_ENABLE=false
 SY_CFG_ASE_CPU_NUMBER=
 SY_CFG_ASE_MEMORY=
-#SY_CFG_ASE_LANG=us_english
 SY_CFG_ASE_LANG=
-#SY_CFG_ASE_CHARSET=iso_1
 SY_CFG_ASE_CHARSET=
-#SY_CFG_ASE_SORTORDER=binary
 SY_CFG_ASE_SORTORDER=
 SY_CFG_ASE_SAMPLE_DB=false
+
+#Configure New Backup Server
+#---------------------------
+SY_CFG_BS_SERVER_NAME={{sap_ase_server_name}}_BS
+SY_CFG_BS_PORT_NUMBER=5001
+SY_CFG_BS_ERROR_LOG={{sap_ase_log}}/{{sap_ase_server_name}}_BS.log
+SY_CFG_BS_ALLOW_HOSTS=
+
+#Configure New Job Scheduler
+#---------------------------
+SY_CFG_JS_SERVER_NAME={{sap_ase_server_name}}_JSAGENT
+SY_CFG_JS_PORT_NUMBER=4900
+SY_CFG_JS_MANAG_DEV_NAME={{sap_ase_target}}/data/sybmgmtdb.dat
+SY_CFG_JS_MANAG_DEV_SIZE=76
+SY_CFG_JS_MANAG_DB_SIZE=76
+
+#Cockpit Host and Ports
+#----------------------
+CONFIG_SCC_HTTP_PORT=4282
+CONFIG_SCC_HTTPS_PORT=4283
+SCC_TDS_PORT_NUMBER=4998
+SCC_RMI_PORT_NUMBER=4992
+
+#Cockpit Users and Passwords
+#---------------------------
+CONFIG_SCC_CSI_SCCADMIN_USER=sccadmin
+CONFIG_SCC_CSI_SCCADMIN_PWD={{sap_ase_sccadmin}}
+CONFIG_SCC_CSI_UAFADMIN_USER=uafadmin
+CONFIG_SCC_CSI_UAFADMIN_PWD={{sap_ase_uafadmin}}
+CONFIG_SCC_REPOSITORY_PWD={{sap_ase_scc_repository}}
+
+########## Desativadas ##################
+#Configure Self Management
+#-------------------------
+# Caso liguemos SY_CONFIG_SM_SERVER temos que config:
+#SY_CFG_SM_USER_NAME=sa
+
+#Configure New XP Server
+#-----------------------
+# Caso liguemos SY_CONFIG_XP_SERVER temos que config:
+#SY_CFG_XP_SERVER_NAME=SYBASE_XP
+#SY_CFG_XP_PORT_NUMBER=5002
+#SY_CFG_XP_ERROR_LOG=/opt/sap/ASE-16_0/install/SYBASE_XP.log
+
+#Configure Historical Monitoring Data Repository
+#-----------------------------------------------
+# Caso liguemos SY_CONFIG_BALDR_OPTION (sem certeza) temos que config:
+#SY_CFG_BALDR_DATA_DEV_NAME=/opt/sap/data/saptoolsdata.dat
+#SY_CFG_BALDR_DATA_DEV_SIZE=2048
+#SY_CFG_BALDR_LOG_DEV_NAME=/opt/sap/data/saptoolslog.dat
+#SY_CFG_BALDR_LOG_DEV_SIZE=256
+#SY_CFG_SM_PASSWORD=

@@ -13,6 +13,11 @@ Esta *role* encapsula parte da toda lógica da criação de um servidor
  - Permite especificar o caminho do log de serviço do servidor
  - Configura o comando service sybase start (ou stop)
 
+## Pré-configurações
+
+1. Colocar o tar no servidor
+2. separar duas partições: /replicado e /replicado/log?
+
 ## Algumas configurações pós-instalação com o isql
 
 Conectar no servidor estando no mesmo, o -w1000 torna os outputs 

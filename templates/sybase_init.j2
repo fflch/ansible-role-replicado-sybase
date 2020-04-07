@@ -1,6 +1,6 @@
 #!/bin/sh
 
-SYBASE={{sap_ase_bin}}
+SYBASE={{sap_ase_target}}
 SERVER={{sap_ase_server_name}}
 
 # Source environment variables.
@@ -24,7 +24,7 @@ start() {
         ret=$?
         if [ $ret -eq 0 ]
         then
-                showserver | grep dataserver | awk '{ print $4 }' >{{sap_ase_bin}}/sybase.pid
+                showserver | grep dataserver | awk '{ print $4 }' >{{sap_ase_target}}/sybase.pid
                 echo "$SYBASE_START Success."
         else
                 echo "$SYBASE_START Failed!"

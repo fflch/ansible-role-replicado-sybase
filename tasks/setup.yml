@@ -1,3 +1,8 @@
+- name: verifica se existe o arquivo SYBASE.sh
+  stat:
+    path: "{{sap_ase_target}}/SYBASE.sh"
+  register: instalado_check
+
 - name: install...
   become: yes
   become_user: 'sybase'
@@ -7,10 +12,5 @@
     -i silent
     -DAGREE_TO_SAP_LICENSE=true
   args:
-    creates: '{{sap_ase_bin}}/SYBASE.sh'
-
-    #- name: set environment variables
-    #  file:
-    #    src: '{{sap_ase_bin}}/IQ.sh'
-    #    dest: '/etc/profile.d/IQ.sh'
-    #    state: link
+    creates: '{{sap_ase_target}}/SYBASE.sh'
+  when: not instalado_check['stat']['exists']|bool

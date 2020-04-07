@@ -1,9 +1,15 @@
 ---
 sap_ase_home: '/sybase'
-sap_ase_bin: "{{sap_ase_home}}/bin"
-sap_ase_password: 'Sybase123456789'
-sap_ase_path2tar: '~/ASE_Suite.linuxamd64.tgz'
+sap_ase_target: "{{sap_ase_home}}/sap"
+sap_ase_tar: '/root/ASE_Suite.linuxamd64.tgz'
 sap_ase_server_name: 'SYBASE'
 sap_ase_host: 'sybase.example.com'
 sap_ase_ip: '192.168.8.56'
 sap_ase_log: '/log'
+
+sap_ase_password: 'Sybase123456789'
+sap_ase_tech_user: 'SybaseTech123456'
+sap_ase_scc_repository: 'S1ybaseTech123456'
+sap_ase_sccadmin: 'S2ybaseTech123456'
+sap_ase_uafadmin: 'S3ybaseTech123456'
+

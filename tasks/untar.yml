@@ -1,0 +1,32 @@
+---
+- name: create dir
+  file:
+    dest: '{{sap_ase_home}}/install'
+    state: directory
+    owner: sybase
+    group: sybase
+
+######## Manobra para não ficar descompactando toda rodada  ##########
+- name: verifica se existe o arquivo install/setup.bin
+  stat:
+    path: "{{sap_ase_home}}/install/setup.bin"
+  register: descompactado_check
+
+- name: Descompacta somente caso não exista install/setup.bin
+  unarchive:
+    remote_src: yes
+    src: '{{sap_ase_tar}}'
+    dest: '{{sap_ase_home}}/install'
+  when: not descompactado_check['stat']['exists']|bool
+
+######################################################################
+
+- name: fix owner
+  file:
+    dest: '{{sap_ase_home}}'
+    state: directory
+    owner: sybase
+    group: sybase
+    recurse: yes
+
+
