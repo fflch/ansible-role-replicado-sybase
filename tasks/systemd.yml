@@ -13,5 +13,4 @@
 - name: enable service
   systemd:
     name: sybase
-    state: started
-    enabled: True
+    enabled: yes

@@ -1,4 +1,9 @@
 ---
+- name: install sudo
+  apt:
+    name: sudo
+    update_cache: yes
+
 - name: create sybase group
   group:
     name: 'sybase'

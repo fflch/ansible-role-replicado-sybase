@@ -20,7 +20,7 @@ fi
 start() {
         SYBASE_START=$"Starting ${NAME} service: "
         $SU sybase -c ". $SYBASE/SYBASE.sh; $SYBASE/$SYBASE_ASE/bin/startserver \
--f $SYBASE/$SYBASE_ASE/install/RUN_${SERVER} > /dev/null"
+-f $SYBASE/$SYBASE_ASE/install/RUN_${SERVER} -f $SYBASE/$SYBASE_ASE/install/RUN_${SERVER}_BS > /dev/null"
         ret=$?
         if [ $ret -eq 0 ]
         then
@@ -35,11 +35,9 @@ start() {
 stop() {
         echo -n $"Stopping ${NAME} service: "
 
- #password needs to be given in clear text:
-        #$SU sybase -c ". $SYBASE/SYBASE.sh; isql -S $SERVER -U sa -P '{{sap_ase_password}}' < \
-#$SYBASE/$SYBASE_ASE/upgrade/shutdown.sql > /dev/null"
+        $SU sybase -c ". $SYBASE/SYBASE.sh; isql -S $SERVER -U sa -P '{{sap_ase_password}}' < $SYBASE/$SYBASE_ASE/upgrade/shutdown.sql > /dev/null"
 
- #kill the process
+        #kill the process
         pkill dataserver
 
         ret=$?
