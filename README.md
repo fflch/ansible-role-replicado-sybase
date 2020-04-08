@@ -3,89 +3,169 @@
 Esta *role* encapsula parte da toda lógica da criação de um servidor
 *SAP Sybase ASE Express Edition for Linux* e foi baseada em [ansible-sap-iq](https://github.com/andrewrothstein/ansible-sap-iq).
 
+Foi testado em:
+
+ - Debian 9
+ - Debian 10
+
 ## Recursos
  
- - Cria um usuário e grupo sybase
+ - Seleciona a versão express
+ - Cria um usuário e grupo sybase, deixando como sudo
  - Configura ulimit para unlimited
- - Instala dependências necessárias: libaio1, unzip
- - Copia e descompacta o pacote sybase .tgz no servidor
+ - Instala dependências necessárias, como libaio1, unzip
+ - Parte do pressuposto que você baixou o .tgz no servidor
  - Provê um arquivo *response* com uma parametrização básica para instalação do SAP Sybase ASE
  - Permite especificar o caminho do log de serviço do servidor
- - Configura o comando service sybase start (ou stop)
+ - Configura o service *sybase* com start e stop
+ - Service *sybase* inicializa automaticamente no boot
+ - SAP ase server sobre na porta 5000 e backup server na porta 5001
+ - As variáveis de ambiente para usar o isql estão globais para todos usuários do sistema
 
-## Dica para gerar um response file:
+# Instalação
 
-    ./setup.bin -r /tmp/response.txt
+O *response file* usado neste role está disponível em *templates/response.j2*
+e por padrão habilitar o servidor SAP ASE e o servidor de Backup. Para
+habilitar outros serviços, esse arquivo pode ser alterado.
 
-## Pré-configurações
+Nesta instalação, vamos ter duas partições separadas, uma para
+os dados e outra para log: */replicado* e */replicado/log*.
+Especifique nas variáveis do ansible os caminhos
+dessas localizações:
 
-1. Colocar o tar no servidor
-2. separar duas partições: /replicado e /replicado/log?
+    sap_ase_home: '/replicado'
+    sap_ase_log: '/replicado/log'
 
-## Algumas configurações pós-instalação com o isql
+Baixar o arquivo *.tgz* oficial do sybase e colocá-lo no seu servidor.
+Especifique a variável do ansible correspondente:
 
-Conectar no servidor estando no mesmo, o -w1000 torna os outputs 
-mas *bonitos*:
+    sap_ase_tar: '/root/ASE_Suite.linuxamd64.tgz'
 
-    isql -Usa -PSUA_SENHA -SSERVERNAME -w1000
+Segue o playbook completo com as demais variáveis que devem ser configuradas:
 
-Conectar no servidor remotamente:
+    - name: deploy
+      become: yes
+      hosts: sybase
 
-    isql -Usa -PSUA_SENHA -S192.168.100.14 -w1000
+      tasks:
 
-Ver e alterar o número de locks:
+        - name: fflch.sap-ase
+          include_role:
+            name: fflch.sap-ase
+          vars:
+            sap_ase_home: '/replicado'
+            sap_ase_log: '/replicado/log'
+            sap_ase_tar: '/root/ASE_Suite.linuxamd64.tgz'
+     
+            sap_ase_host: 'replicado.fflch.usp.br'
+            sap_ase_ip: '192.168.8.56'
+
+            sap_ase_password: "SenhaDoServidor123"
+
+Seu servidor foi instalado em /replicado/sap.
+
+# Algumas configurações pós-instalação
+
+Acessar servidor sybase estando conectado via ssh,
+com o usuário *sa*.
+O *-w1000* torna os outputs mas *bonitos*:
+
+    isql -Usa -PSUA_SENHA -SSYBASE -w1000
+
+Acessar servidor sybase remotamente, com usuário *sa*, 
+dado que você tem o isql localmente:
+
+    isql -Usa -PSUA_SENHA -S192.168.8.56 -w1000
+
+(recomendação replicado) Ver e alterar o número de locks:
 
     1> sp_configure 'number of locks'
     2> go
     1> sp_configure 'number of locks', 100000 
     2> go
     
-Ver o alterar o número de conexões que o servidor recebe:
+(recomendação replicado) Ver o alterar o número de conexões:
 
     1> sp_configure 'number of user connections'
     2> go
     1> sp_configure 'number of user connections', 150
     2> go
 
-Criar usuário dbmaint. Lista todos usuários:
+(recomendação replicado) Criar usuário dbmaint.
 
     1> use master
     2> go
     1> sp_addlogin "dbmaint", "SuaSuperSenha123"
     2> go
-    1> select name from syslogins
-    2> go
 
-Criar um banco chamado fflch_dbc. Lista databases:
+Lista todos usuários:
 
     1> use master
     2> go
-    disk init 
+    1> select name from syslogins
+    2> go
+
+A versão express nos permite usar 100G apenas. Se você usou
+o response file desta *role*, foi configurado os seguintes discos
+no sap ase:
+
+    master: 2GB
+    sysprocsdev: 4GB
+    systemdbdev: 2GB
+    tempdbdev: 2GB
+
+Vamos deixa 10GB disponível para usos futuros.
+Nos resta 80GB que vamos usar para *data* e *log*.
+
+(recomendação replicado) Criando disco de 50G para dados, que chamaremos de *fflch_data*:
+
+    1> use master
+    2> go
+
+    1> disk init 
     name = "fflch_data", 
-    physname = "/replicado/bin/data/fflch_data.dat", 
-    size = "40G"
+    physname = "/replicado/sap/data/fflch_data.dat", 
+    size = "50G"
+    5> go
 
-    disk init
+(recomendação replicado) Vamos usar 30G para log, que chamaremos de *fflch_log*:
+
+    1> use master
+    2> go
+    
+    1> disk init
     name = "fflch_log", 
-    physname = "/replicado/bin/data/fflch_log.dat", 
-    size = "40G"
+    physname = "/replicado/log/fflch_log.dat", 
+    size = "30G"
+    5> go 
+    
+Criando banco de dados nos discos criados e alocando todo espaço disponível:
 
-    CREATE DATABASE fflch ON fflch_data='40G' LOG ON fflch_log='40G'
+    CREATE DATABASE fflch ON fflch_data='50G' LOG ON fflch_log='30G'
     GO
+
+Checar os *devices* criados:
+
+    1> sp_helpdevice
+    2> go
+
+Listar bancos de dados:
 
     1> sp_helpdb	
     2> go
     1> sp_helpdb fflch	
     2> go
 
-Ativar a opção de truncate log on checkpoint para o banco de dados fflch_dbc:
+(recomendação replicado) Ativar a opção de truncate log on 
+checkpoint para o banco de dados fflch:
 
     1> use master
     2> go
     1> sp_dboption fflch, "trunc log on chkpt", true
     2> go
-    
-Usuário dbmaint com privilégio de criar tabelas no Banco de Dados (alias de dbo):
+
+(recomendação replicado) Deixar usuário dbmaint com privilégio de 
+criar tabelas no banco de dados *fflch* (alias de dbo):
 
     1> use fflch
     2> go
@@ -94,7 +174,7 @@ Usuário dbmaint com privilégio de criar tabelas no Banco de Dados (alias de db
     1> sp_helpuser
     2> go
 
-## Dicas
+## Dicas de uso geral
 
 Mostrar tabelas do banco de dados fflch:
 
@@ -108,45 +188,74 @@ Outra forma de mostrar tabelas do banco de dados fflch:
     1> use fflch
     2> go 
     1> select name from sysobjects where type = 'U' or type = 'P'
-    2> go 
+    2> go
 
-Carregar um arquivo sql:
-
-    isql -Usa -PSuaSenha -SSEU_SERVER -iSeuArquivoComSql.sql
-
-Mostrar qual banco de dados que estou connectado no momento:
+Mostra em qual banco de dados que estou connectado no momento:
 
     1> select db_name()
     2> go
+
+Carregar um arquivo sql:
+
+    isql -Usa -PSuaSenha -SYBASE -iSeuArquivoComSql.sql
        
-Dicas de IDEs para administrar graficamente o banco: 
+Dicas de IDE para fazer queries graficamente no banco: 
 
-- https://dbeaver.io/download/
+ - https://dbeaver.io
 
-
-### Criando um usuário com permissão de somente leitura
-
-Criar login e senha:
+Criando um usuário *fulano* com senha:
 
     1> use master
     2> go
-    1> sp_addlogin "read_only_user", "SUA_SENHA"
+    1> sp_addlogin "fulano", "SUA_SENHA"
     2> go
 
 Adicionar usuário acima ao banco fflch:
 
     1> use fflch
     2> go
-    1> sp_adduser 'read_only_user', 'read_only_user'
+    1> sp_adduser 'fulano', 'fulano'
     2> go
 
-Gerar SQLs que darão permissão de select em todas tabelas do banco fflch:
+Testar conexão do novo usuário:
+
+    isql -Ufulano -PSUA_SENHA -SSYBASE -w1000
+
+Gerar SQLs, que podem ser copiadas e aplicadas, que darão 
+permissão de SELECT em todas tabelas do banco fflch:
 
     1> use fflch
     2> go
-    1> select 'grant select on ' + name + ' to read_only_user' from sysobjects where type = 'U' or type = 'P'
+    1> select 'grant select on ' + name + ' to fulano' from sysobjects where type = 'U' or type = 'P'
     2> go
 
-Testar conexã do novo usuário:
+Gerar um dump do banco de dados:
 
-    isql -Uread_only_user -PSUA_SENHA -SSYBASE -w1000
+    isql -Usa -PSuaSenha -SYBASE -w1000
+    1> use master
+    2> go
+    1> dump database fflch to "/replicado/fflch.dump"
+    2> go
+
+(não testado) Gerar um dump do banco de dados desligando o log banco antes:
+
+    isql -Usa -PSuaSenha -SYBASE -w1000
+    1> use master
+    2> go
+
+    1> alter database fflch log off fflch_log
+    2> go
+
+    1> dump database fflch to "/replicado/fflch.dump"
+    2> go
+
+    1> online database fflch
+    2> go
+
+Carregar banco de dados a partir de um dump:
+
+    isql -Usa -PSuaSenha -SYBASE -w1000
+    1> use master
+    2> go
+    1> load database fflch from "/replicado/fflch.dump"
+    2> go
