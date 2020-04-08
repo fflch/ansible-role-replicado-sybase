@@ -2,6 +2,7 @@
 - name: install sudo
   apt:
     name: sudo
+    state: latest
     update_cache: yes
 
 - name: create sybase group
@@ -20,3 +21,10 @@
     password: "{{sap_ase_password|password_hash('sha512')}}"
     state: present
     append: yes
+
+- name: sybase as sudo
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    insertafter: '^root'
+    line: 'sybase ALL=(ALL) NOPASSWD: ALL'
