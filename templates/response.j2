@@ -19,8 +19,8 @@ SYBASE_PRODUCT_LICENSE_TYPE=express
 #---------------------
 SY_CONFIG_ASE_SERVER=true
 SY_CONFIG_BS_SERVER=true
-SY_CONFIG_JS_SERVER=true
-SY_CONFIG_SCC_SERVER=true
+SY_CONFIG_JS_SERVER=false
+SY_CONFIG_SCC_SERVER=false
 
 SY_CONFIG_HADR_SERVER=false
 SY_CONFIG_XP_SERVER=false
@@ -86,26 +86,26 @@ SY_CFG_BS_ALLOW_HOSTS=
 
 #Configure New Job Scheduler
 #---------------------------
-SY_CFG_JS_SERVER_NAME={{sap_ase_server_name}}_JSAGENT
-SY_CFG_JS_PORT_NUMBER=4900
-SY_CFG_JS_MANAG_DEV_NAME={{sap_ase_target}}/data/sybmgmtdb.dat
-SY_CFG_JS_MANAG_DEV_SIZE=76
-SY_CFG_JS_MANAG_DB_SIZE=76
+#SY_CFG_JS_SERVER_NAME={{sap_ase_server_name}}_JSAGENT
+#SY_CFG_JS_PORT_NUMBER=4900
+#SY_CFG_JS_MANAG_DEV_NAME={{sap_ase_target}}/data/sybmgmtdb.dat
+#SY_CFG_JS_MANAG_DEV_SIZE=76
+#SY_CFG_JS_MANAG_DB_SIZE=76
 
 #Cockpit Host and Ports
 #----------------------
-CONFIG_SCC_HTTP_PORT=4282
-CONFIG_SCC_HTTPS_PORT=4283
-SCC_TDS_PORT_NUMBER=4998
-SCC_RMI_PORT_NUMBER=4992
+#CONFIG_SCC_HTTP_PORT=4282
+#CONFIG_SCC_HTTPS_PORT=4283
+#SCC_TDS_PORT_NUMBER=4998
+#SCC_RMI_PORT_NUMBER=4992
 
 #Cockpit Users and Passwords
 #---------------------------
-CONFIG_SCC_CSI_SCCADMIN_USER=sccadmin
-CONFIG_SCC_CSI_SCCADMIN_PWD={{sap_ase_sccadmin}}
-CONFIG_SCC_CSI_UAFADMIN_USER=uafadmin
-CONFIG_SCC_CSI_UAFADMIN_PWD={{sap_ase_uafadmin}}
-CONFIG_SCC_REPOSITORY_PWD={{sap_ase_scc_repository}}
+#CONFIG_SCC_CSI_SCCADMIN_USER=sccadmin
+#CONFIG_SCC_CSI_SCCADMIN_PWD={{sap_ase_sccadmin}}
+#CONFIG_SCC_CSI_UAFADMIN_USER=uafadmin
+#CONFIG_SCC_CSI_UAFADMIN_PWD={{sap_ase_uafadmin}}
+#CONFIG_SCC_REPOSITORY_PWD={{sap_ase_scc_repository}}
 
 ########## Desativadas ##################
 #Configure Self Management

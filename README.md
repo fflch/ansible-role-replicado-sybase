@@ -13,6 +13,10 @@ Esta *role* encapsula parte da toda lógica da criação de um servidor
  - Permite especificar o caminho do log de serviço do servidor
  - Configura o comando service sybase start (ou stop)
 
+## Dica para gerar um response file:
+
+    ./setup.bin -r /tmp/response.txt
+
 ## Pré-configurações
 
 1. Colocar o tar no servidor
