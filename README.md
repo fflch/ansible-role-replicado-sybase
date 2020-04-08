@@ -28,10 +28,10 @@ O *response file* usado neste role está disponível em *templates/response.j2*
 e por padrão habilitar o servidor SAP ASE e o servidor de Backup. Para
 habilitar outros serviços, esse arquivo pode ser alterado.
 
-Nesta instalação, vamos ter duas partições separadas, uma para
-os dados e outra para log: */replicado* e */replicado/log*.
-Especifique nas variáveis do ansible os caminhos
-dessas localizações:
+Nesta instalação, vamos isolar a partição do sap ase
+deixando um diretório para os dados e outra para log:
+ */replicado* e */replicado/log*, assim, especifique as
+variáveis do ansible correspondente:
 
     sap_ase_home: '/replicado'
     sap_ase_log: '/replicado/log'
@@ -58,8 +58,6 @@ Segue o playbook completo com as demais variáveis que devem ser configuradas:
             sap_ase_tar: '/root/ASE_Suite.linuxamd64.tgz'
      
             sap_ase_host: 'replicado.fflch.usp.br'
-            sap_ase_ip: '192.168.8.56'
-
             sap_ase_password: "SenhaDoServidor123"
 
 Seu servidor foi instalado em /replicado/sap.

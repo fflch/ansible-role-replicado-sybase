@@ -4,7 +4,7 @@ sap_ase_target: "{{sap_ase_home}}/sap"
 sap_ase_tar: '/root/ASE_Suite.linuxamd64.tgz'
 sap_ase_server_name: 'SYBASE'
 sap_ase_host: 'sybase.example.com'
-sap_ase_ip: '192.168.8.56'
+sap_ase_ip: '127.0.0.1'
 sap_ase_log: '/log'
 
 sap_ase_password: 'Sybase123456789'
