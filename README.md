@@ -82,7 +82,7 @@ dado que você tem o isql localmente:
     1> sp_configure 'number of locks', 100000 
     2> go
     
-(recomendação replicado) Ver o alterar o número de conexões:
+(recomendação replicado) Ver e alterar o número de conexões:
 
     1> sp_configure 'number of user connections'
     2> go
@@ -103,19 +103,19 @@ Lista todos usuários:
     1> select name from syslogins
     2> go
 
-A versão express nos permite usar 100G apenas. Se você usou
-o response file desta *role*, foi configurado os seguintes discos
-no sap ase:
+A versão express nos permite usar 50G apenas
+(Exceed the limit of 51200 MB for ASE Express Edition)
+Se você usou o response file desta *role*, foi configurado 
+os seguintes discos/device no sap ase:
 
     master: 2GB
-    sysprocsdev: 4GB
-    systemdbdev: 2GB
-    tempdbdev: 2GB
+    sysprocsdev: 500MB
+    systemdbdev: 500MGB
+    tempdbdev: 500MGB
 
-Vamos deixa 10GB disponível para usos futuros.
-Nos resta 80GB que vamos usar para *data* e *log*.
+Nos resta 46,5GB que vamos usar para *data* e *log*.
 
-(recomendação replicado) Criando disco de 50G para dados, que chamaremos de *fflch_data*:
+(recomendação replicado) Criando disco de 26G para dados, que chamaremos de *fflch_data*:
 
     1> use master
     2> go
@@ -123,10 +123,16 @@ Nos resta 80GB que vamos usar para *data* e *log*.
     1> disk init 
     name = "fflch_data", 
     physname = "/replicado/sap/data/fflch_data.dat", 
-    size = "50G"
+    size = "26G"
     5> go
 
-(recomendação replicado) Vamos usar 30G para log, que chamaremos de *fflch_log*:
+Caso precise deletar o disk/device:
+
+    1> sp_dropdevice fflch_data
+    2> go
+    rm /replicado/sap/data/fflch_data.dat
+
+(recomendação replicado) Vamos usar 20G para log, que chamaremos de *fflch_log*:
 
     1> use master
     2> go
@@ -134,13 +140,13 @@ Nos resta 80GB que vamos usar para *data* e *log*.
     1> disk init
     name = "fflch_log", 
     physname = "/replicado/log/fflch_log.dat", 
-    size = "30G"
+    size = "20G"
     5> go 
     
 Criando banco de dados nos discos criados e alocando todo espaço disponível:
 
-    CREATE DATABASE fflch ON fflch_data='50G' LOG ON fflch_log='30G'
-    GO
+    1> CREATE DATABASE fflch ON fflch_data='26G' LOG ON fflch_log='20G'
+    2> go
 
 Checar os *devices* criados:
 
@@ -256,4 +262,6 @@ Carregar banco de dados a partir de um dump:
     1> use master
     2> go
     1> load database fflch from "/replicado/fflch.dump"
+    2> go
+    1> online database fflch
     2> go
