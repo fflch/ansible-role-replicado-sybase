@@ -1,0 +1,16 @@
+---
+- name: copy samba_backup
+  template:
+    src: backup.sh.j2
+    dest: "{{sap_ase_home}}/backup.sh"
+    owner: sybase
+    group: sybase
+    mode: 0700
+
+- name: Run backups
+  cron:
+    name: "backup sybase"
+    minute: "0"
+    hour: "2"
+    job: "{{sap_ase_home}}/backup.sh"
+  when: sap_ase_backup_enable

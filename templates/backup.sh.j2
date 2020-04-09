@@ -1,0 +1,30 @@
+#!/bin/bash
+
+WHERE={{sap_ase_backup_dest}}
+WHEN=`date +%Y-%m-%d-%H%M`
+DAYS={{sap_ase_backup_keep_days}}
+
+# garante que a pasta existe e pertence a sybase
+mkdir -p $WHERE
+chown -R sybase: ${WHERE}
+ 
+# Deleta backups com mais de N dias
+find $WHERE -name "*.backup" -mtime +$DAYS -exec rm  {} \;
+
+su sybase
+source {{sap_ase_target}}/SYBASE.sh
+######################################################
+# Construindo arquivo com o SQL para executar o backup
+cat << EOF > /tmp/sybase_backup.sql
+use master
+go
+
+dump database {{sap_ase_backup_database}} to "{{sap_ase_backup_dest}}/{{sap_ase_backup_database}}.${WHEN}.sql.backup"
+go
+EOF
+######################################################
+
+# Executa backup
+
+isql -S {{sap_ase_server_name}} -U sa -P '{{sap_ase_password}}' < /tmp/sybase_backup.sql > /dev/null
+

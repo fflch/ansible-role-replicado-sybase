@@ -21,6 +21,7 @@ Foi testado em:
  - Service *sybase* inicializa automaticamente no boot
  - SAP ase server sobre na porta 5000 e backup server na porta 5001
  - As variáveis de ambiente para usar o isql estão globais para todos usuários do sistema
+ - Script de backup para um banco de dados
 
 # Instalação
 
@@ -59,6 +60,9 @@ Segue o playbook completo com as demais variáveis que devem ser configuradas:
      
             sap_ase_host: 'replicado.fflch.usp.br'
             sap_ase_password: "SenhaDoServidor123"
+
+            sap_ase_backup_enable: True
+            sap_ase_backup_database: 'fflch'
 
 Seu servidor foi instalado em /replicado/sap.
 
