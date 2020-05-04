@@ -107,52 +107,55 @@ Lista todos usuários:
     1> select name from syslogins
     2> go
 
-A versão express nos permite usar 50G apenas
+A versão express nos permite usar apenas 50G 
 (Exceed the limit of 51200 MB for ASE Express Edition)
 Se você usou o response file desta *role*, foi configurado 
-os seguintes discos/device no sap ase:
+os seguintes discos/devices, entre outros:
 
-    master: 2GB
+    master: 200 MB
+    tempdbdev: 2GB
     sysprocsdev: 500MB
-    systemdbdev: 500MGB
-    tempdbdev: 500MGB
+    systemdbdev: 500MB
 
-Nos resta 46,5GB que vamos usar para *data* e *log*.
+Reservando então 5G para os devices do próprio sistema, podemos
+usar os 45GB restantes. No nosso caso, vamos criar um servidor
+alvo para replicação e vamos criar um device para *data* e 
+outro para *log*.
 
-(recomendação replicado) Criando disco de 26G para dados, que chamaremos de *fflch_data*:
+(recomendação replicado) Criando disco de 20G para dados, que chamaremos de *fflch_data_01*:
 
     1> use master
     2> go
 
     1> disk init 
-    name = "fflch_data", 
-    physname = "/replicado/sap/data/fflch_data.dat", 
-    size = "26G"
+    name = "fflch_data_01", 
+    physname = "/replicado/sap/data/fflch_data_01.dat", 
+    size = "20G"
     5> go
 
 Caso precise deletar o disk/device:
 
-    1> sp_dropdevice fflch_data
+    1> sp_dropdevice fflch_data_01
     2> go
-    rm /replicado/sap/data/fflch_data.dat
+    rm /replicado/sap/data/fflch_data_01.dat
 
-(recomendação replicado) Vamos usar 20G para log, que chamaremos de *fflch_log*:
+Para log vamos criar um device de 3GB que chamaremos de *fflch_log_01*:
 
     1> use master
     2> go
     
     1> disk init
-    name = "fflch_log", 
-    physname = "/replicado/log/fflch_log.dat", 
-    size = "20G"
+    name = "fflch_log_01", 
+    physname = "/replicado/log/fflch_log_01.dat", 
+    size = "3G"
     5> go 
     
 Criando banco de dados nos discos criados e alocando todo espaço disponível:
 
-    1> CREATE DATABASE fflch ON fflch_data='26G' LOG ON fflch_log='20G'
+    1> CREATE DATABASE fflch ON fflch_data_01='20G' LOG ON fflch_log_01='3G'
     2> go
 
-Checar os *devices* criados:
+Verificar os *devices* criados:
 
     1> sp_helpdevice
     2> go
@@ -164,12 +167,26 @@ Listar bancos de dados:
     1> sp_helpdb fflch	
     2> go
 
+Caso necessário, pode-se criar novos devices no futuro,
+como *fflch_data_02* e *fflch_log_02* e adicioná-los no database fflch
+assim:
+
+    ALTER DATABASE fflch ON fflch_data_02='20G'
+    ALTER DATABASE fflch LOG ON fflch_log_02='3G'
+
 (recomendação replicado) Ativar a opção de truncate log on 
 checkpoint para o banco de dados fflch:
 
     1> use master
     2> go
     1> sp_dboption fflch, "trunc log on chkpt", true
+    2> go
+
+(recomendação replicado) Ativar a opção de *select into* para o banco de dados fflch:
+
+    1> use master
+    2> go
+    1> sp_dboption fflch, "select into", true
     2> go
 
 (recomendação replicado) Deixar usuário dbmaint com privilégio de 
@@ -243,21 +260,6 @@ Gerar um dump do banco de dados:
     1> use master
     2> go
     1> dump database fflch to "/replicado/fflch.dump"
-    2> go
-
-(não testado) Gerar um dump do banco de dados desligando o log banco antes:
-
-    isql -Usa -PSuaSenha -SYBASE -w1000
-    1> use master
-    2> go
-
-    1> alter database fflch log off fflch_log
-    2> go
-
-    1> dump database fflch to "/replicado/fflch.dump"
-    2> go
-
-    1> online database fflch
     2> go
 
 Carregar banco de dados a partir de um dump:
