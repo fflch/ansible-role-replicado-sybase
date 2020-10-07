@@ -7,6 +7,8 @@ Foi testado em:
 
  - Debian 9
  - Debian 10
+ 
+Vídeo: https://youtu.be/y0dG2jR_NJQ
 
 ## Recursos
  
